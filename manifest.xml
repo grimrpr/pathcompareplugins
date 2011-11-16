@@ -1,0 +1,15 @@
+<package>
+  <description brief="pathcompareplugins">
+
+     pathcompareplugins
+
+  </description>
+  <author>Benjamin Aschenbrenner</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pathcompareplugins</url>
+  <depend package="pathcompare"/>
+
+</package>
+
+
