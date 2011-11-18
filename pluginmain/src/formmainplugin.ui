@@ -15,10 +15,10 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QComboBox" name="comboBox"/>
+    <widget class="QComboBox" name="ReferencePathSelection"/>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget"/>
+    <widget class="QTableWidget" name="PathInformationTable"/>
    </item>
   </layout>
  </widget>
