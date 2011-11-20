@@ -1,14 +1,13 @@
 <package>
-  <description brief="pathcompareplugins">
+  <description brief="pluginmain">
 
-     pathcompareplugins
+     pluginmain
 
   </description>
   <author>Benjamin Aschenbrenner</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/pathcompareplugins</url>
-  <depend package="pathcompare"/>
+  <url>http://ros.org/wiki/pluginmain</url>
   <depend package="opencv2"/>
   <depend package="cv_bridge"/>
   <depend package="sensor_msgs"/>
