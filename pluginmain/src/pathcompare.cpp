@@ -19,7 +19,10 @@ PathCompare::PathCompare(ROSManager *ros_mngr ,QWidget * tab_widget) :
 
 void PathCompare::updateTopics()
 {
+
         QStringList current_topics_lst = ros_mngr->getTopicNamesOfType(topic_type_str);
+
+        //register callbacks for new topics
 
         if(current_topics_lst.size() > 0)
                 {
@@ -27,10 +30,10 @@ void PathCompare::updateTopics()
                           << current_topics_lst.first().toLocal8Bit().constData()
                           << std::endl;
 
-                Q_FOREACH(QString str, current_topics_lst)
+                Q_FOREACH(const QString &str, current_topics_lst)
                 {
                         //if not in selection keep track of this topic
-                        //we never remove because we want to keep information of a topic even if it is deleted
+                        //we dont remove old topics because we want to keep information of this topic even if it is deleted
                         if(form->ReferencePathSelection->findText(str) < 0)
                         {
                                 //add new item to ComboBox
