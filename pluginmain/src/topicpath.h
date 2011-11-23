@@ -11,6 +11,7 @@
 #include <QVector3D>
 #include <QList>
 
+
 class Position
 {
 public:
@@ -53,4 +54,5 @@ public:
 
 };
 
+typedef boost::shared_ptr<TopicPath> TopicPathPtr;
 #endif // TOPICPATH_H

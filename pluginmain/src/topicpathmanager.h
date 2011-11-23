@@ -11,7 +11,6 @@
 //project includes
 #include "topicpath.h"
 
-typedef boost::shared_ptr<TopicPath> TopicPathPtr;
 
 class TopicPathManager : public QObject
 {
@@ -20,9 +19,12 @@ class TopicPathManager : public QObject
         //this list holds the data elements to be shown in the view
         const QString topic_name;
         TopicPathPtr current_path;
-//        QList<QString> data;
+
+        //data attributes
         double pathlength;
         double median;
+        int num_points;
+
         QList<double> distances;
         TopicPathPtr current_ref_path;
 
@@ -39,7 +41,14 @@ public:
 
         //data functions
         double updatePathLen();
+        double getPathLength() const;
+
         double updateMedian(TopicPathPtr ref_path);
+        double getMedian() const;
+
+        int updateNumPoints();
+        int getNumPoints() const;
+
 private:
         void initData();
         void updateData(const TopicPathPtr &topic_path);
@@ -49,5 +58,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 
 };
+
+typedef boost::shared_ptr<TopicPathManager> TopicPathManagerPtr;
 
 #endif // TOPICPATHMANAGER_H

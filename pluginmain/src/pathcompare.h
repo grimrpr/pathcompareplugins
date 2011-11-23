@@ -16,11 +16,11 @@
 //project include
 #include "../../../pathcompare/src/interfaces/comperatorplugin.h"
 #include "../../../pathcompare/src/interfaces/rosmanager.h"
-
 #include "topicpath.h"
 #include "topicpathmanager.h"
-
+#include "graphtablemodel.h"
 #include "ui_formmainplugin.h"
+
 
 typedef boost::shared_ptr<message_filters::Cache<nav_msgs::Path> > PathCachePtr;
 typedef boost::shared_ptr<TopicPathManager> TopicPathManagerPtr;

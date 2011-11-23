@@ -44,6 +44,7 @@ void TopicPathManager::updateData(const TopicPathPtr &topic_path)
                   << " has now: " << median
                   << " as median devergence to reference path. " << std::endl;
 
+        num_points = updateNumPoints();
 }
 
 TopicPathPtr  TopicPathManager::getCurrentPath() const
@@ -53,7 +54,11 @@ TopicPathPtr  TopicPathManager::getCurrentPath() const
 
 void TopicPathManager::updateReferencePath(TopicPathPtr new_ref_tp)
 {
+        if(new_ref_tp == TopicPathPtr())
+                return;
+
         current_ref_path = new_ref_tp;
+        updateData(current_path);
 }
 
 QString TopicPathManager::getTopicName() const
@@ -75,6 +80,11 @@ double TopicPathManager::updatePathLen()
         }
 
         return len;
+}
+
+double TopicPathManager::getPathLength() const
+{
+        return pathlength;
 }
 
 double TopicPathManager::updateMedian(TopicPathPtr ref_path)
@@ -119,4 +129,19 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
 
         qSort(distances);
         return distances.at(distances.size()/2);
+}
+
+double TopicPathManager::getMedian() const
+{
+        return median;
+}
+
+int TopicPathManager::updateNumPoints()
+{
+        return current_path->points.size();
+}
+
+int TopicPathManager::getNumPoints() const
+{
+        return num_points;
 }

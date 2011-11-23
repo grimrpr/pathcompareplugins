@@ -15,6 +15,8 @@ PathCompare::PathCompare(ROSManager *ros_mngr ,QWidget * tab_widget) :
 
         //connect to ros_mngr topic update tick
         connect(ros_mngr, SIGNAL(updateModel()), this, SLOT(updateTopics()));
+
+        form->PathInformationTable->setModel(new GraphTableModel(tpm_list));
 }
 
 void PathCompare::topicSelected(const QString &topic_name)
