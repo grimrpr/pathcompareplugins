@@ -25,11 +25,10 @@ public:
                 timestamp(timestamp)
         {}
 
-        bool operator <(const Position & rhs)
+        bool operator<(const Position & rhs) const
         {
-                return sequence_nbr < rhs.sequence_nbr;
+                return timestamp < rhs.timestamp;
         }
-
 };
 
 
