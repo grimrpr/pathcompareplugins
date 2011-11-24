@@ -13,11 +13,12 @@ int GraphTableModel::columnCount(const QModelIndex &parent) const{
 
 QVariant GraphTableModel::data(const QModelIndex &index, int role) const{
 
+
         if (!index.isValid())
                 return QVariant();
-        if (index.row() >= analysis_header_data.size())
-                return QVariant();
         if (index.column() >= tpm_list.size())
+                return QVariant();
+        if (index.row() >= analysis_header_data.size())
                 return QVariant();
 
         if(role == Qt::DisplayRole || role == Qt::EditRole){
@@ -34,6 +35,13 @@ QVariant GraphTableModel::data(const QModelIndex &index, int role) const{
                 //distance median
                 case 2:
                         return QString().setNum(tpm->getMedian());
+                default:
+                        QList<double> distances = tpm->getDistances();
+                        int size = distances.size();
+                        if((index.row()-3) >= size)
+                                return QString("");
+                        else
+                                return QString().setNum(distances.at((size-1)-index.row()+3));
                 }
         }
 
@@ -57,26 +65,35 @@ Qt::ItemFlags GraphTableModel::flags(const QModelIndex &index) const{
 }
 
 
-void GraphTableModel::updataTPMList(const QList<TopicPathManagerPtr> &new_list)
+void GraphTableModel::updataTPMList(const QList<TopicPathManagerPtr> new_list)
 {
+
+//        std::cout << "updateTPMList()" << std::endl;
+
+        if(new_list == tpm_list || new_list == QList<TopicPathManagerPtr>())
+                return;
+
         if(tpm_list.size() > 0)
         {
                 beginRemoveColumns(QModelIndex(), 0, tpm_list.size()-1);
+                removeColumns(0,tpm_list.size());
                 tpm_list.clear();
-                endRemoveColumns();
+                endRemoveColumns();;
         }
 
         if(new_list.size() > 0)
         {
                 beginInsertColumns(QModelIndex(), 0, new_list.size()-1);
                 tpm_list = new_list;
+                insertColumns(0,new_list.size());
                 endInsertColumns();
         }
 }
 
-void GraphTableModel::updateTPM(const QString &topic)
+void GraphTableModel::updateTPM(const QString topic)
 {
 
+//        std::cout << "updateTPM()" << std::endl;
         int i;
         for(i = 0; i < tpm_list.size(); ++i)
         {

@@ -5,7 +5,9 @@ PathCompare::PathCompare(ROSManager *ros_mngr ,QWidget * tab_widget) :
         ComperatorPlugin(),
         form(new Ui::Form),
         ros_mngr(ros_mngr),
-        topic_type_str("nav_msgs/Path")
+        topic_type_str("nav_msgs/Path"),
+        tpm_list(),
+        table_model(new GraphTableModel(tpm_list))
 
 {
         form->setupUi(tab_widget);
@@ -13,13 +15,18 @@ PathCompare::PathCompare(ROSManager *ros_mngr ,QWidget * tab_widget) :
 
         updateTopics();
 
+        //connect to table model update function
+        connect(this, SIGNAL(tpmListChanged(QList<TopicPathManagerPtr>)),
+                table_model.get(), SLOT(updataTPMList(QList<TopicPathManagerPtr>)));
+
         //connect to ros_mngr topic update tick
         connect(ros_mngr, SIGNAL(updateModel()), this, SLOT(updateTopics()));
 
-        form->PathInformationTable->setModel(new GraphTableModel(tpm_list));
+        form->PathInformationTable->setModel(table_model.get());
+//        form->PathInformationTable->setModel(new GraphTableModel(tpm_list));
 }
 
-void PathCompare::topicSelected(const QString &topic_name)
+void PathCompare::topicSelected(const QString topic_name)
 {
         int i;
         for(i = 0; i < tpm_list.size(); ++i)
@@ -55,6 +62,7 @@ void PathCompare::updateTopics()
                         {
 
                                 TopicPathManagerPtr tpm(new TopicPathManager(str));
+                                connect(tpm.get(), SIGNAL(refreshTPM(QString)), table_model.get(), SLOT(updateTPM(QString)));
                                 tpm_list.append(tpm);
 
                                 //add new item to ComboBox
@@ -71,5 +79,6 @@ void PathCompare::updateTopics()
                                                                                        _1));
                         }
                 }
+                Q_EMIT tpmListChanged(tpm_list);
         }
 }

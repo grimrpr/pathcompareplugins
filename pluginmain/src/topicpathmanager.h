@@ -58,6 +58,7 @@ private:
         void updateData(const TopicPathPtr &topic_path);
 
 Q_SIGNALS:
+        void refreshTPM(const QString & topic);
 
 public Q_SLOTS:
 

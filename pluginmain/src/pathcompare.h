@@ -24,6 +24,7 @@
 
 typedef boost::shared_ptr<message_filters::Cache<nav_msgs::Path> > PathCachePtr;
 typedef boost::shared_ptr<TopicPathManager> TopicPathManagerPtr;
+typedef boost::shared_ptr<GraphTableModel> GraphTableModelPtr;
 
 class PathCompare : public ComperatorPlugin
 {
@@ -33,14 +34,18 @@ class PathCompare : public ComperatorPlugin
         ROSManager *ros_mngr;
         const std::string topic_type_str;
         QList<TopicPathManagerPtr> tpm_list;
+        GraphTableModelPtr table_model;
         QList<message_filters::Connection> connections;
 
 public:
     PathCompare(ROSManager *ros_mngr, QWidget *tab_widget);
 
+Q_SIGNALS:
+    void tpmListChanged(const QList<TopicPathManagerPtr> tm_list);
+
 public Q_SLOTS:
     void updateTopics();
-    void topicSelected(const QString &topic_name);
+    void topicSelected(const QString topic_name);
 
 };
 

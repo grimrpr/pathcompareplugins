@@ -30,6 +30,10 @@ public:
             QAbstractTableModel(parent)
     {
             analysis_header_data << "#points" << "pathlength" << "dist to ref (median)";
+            //add strings for greatest 20 distances
+            for(int i = 1; i <= 20; ++i)
+                    analysis_header_data << QString().setNum(i);
+
             updataTPMList(tpm_list);
     }
 
@@ -60,8 +64,8 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
 public Q_SLOTS:
-    void updataTPMList(const QList<TopicPathManagerPtr> &new_list);
-    void updateTPM(const QString &topic);
+    void updataTPMList(const QList<TopicPathManagerPtr> new_list);
+    void updateTPM(const QString topic);
 };
 
 #endif // GRAPHTABLEMODEL_H

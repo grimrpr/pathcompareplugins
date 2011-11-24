@@ -34,6 +34,11 @@ public:
         {
                 return timestamp < rhs.timestamp;
         }
+
+        bool operator<=(const Position & rhs) const
+        {
+                return timestamp <= rhs.timestamp;
+        }
 };
 
 

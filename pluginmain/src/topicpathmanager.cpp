@@ -33,18 +33,24 @@ void TopicPathManager::initData()
 void TopicPathManager::updateData(const TopicPathPtr &topic_path)
 {
         pathlength = updatePathLen();
+        /*
         std::cout << "The path of topic: "
                   << topic_name.toLocal8Bit().constData()
                   << " is now: " << pathlength
                   << " long. " << std::endl;
+                  */
 
         median = updateMedian(current_ref_path);
+        /*
         std::cout << "The path of topic: "
                   << topic_name.toLocal8Bit().constData()
                   << " has now: " << median
                   << " as median devergence to reference path. " << std::endl;
+                  */
 
         num_points = updateNumPoints();
+
+        Q_EMIT refreshTPM(topic_name);
 }
 
 TopicPathPtr  TopicPathManager::getCurrentPath() const
@@ -94,59 +100,73 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
 {
         QList<Position>::const_iterator it_current, it_ref1, it_ref2;
         double k;
+        cv::Point3d section, dist;
+        QList<double> distan;
+
+
         if(ref_path == TopicPathPtr() || ref_path->points.size() < 2)
                 return 0;
 
-        distances.clear();
 
         it_ref1 = ref_path->points.constBegin();
         it_ref2 = it_ref1 + 1;
 
-        cv::Point3d section, dist;
 
+        std::cout << topic_name.toLocal8Bit().constData() << std::endl;
         for(it_current = current_path->points.constBegin(); it_current < current_path->points.constEnd(); ++it_current)
         {
                 //slide compare section in reference path
                 while(((*it_ref2) < (*it_current)) && (it_ref2 < (ref_path->points.constEnd() - 1)))
                 {
+                        std::cout << "slide compare section" << std::endl;
                         ++it_ref1;
                         ++it_ref2;
                 }
                 section = (*it_ref1).point - (*it_ref2).point;
+                double len_squared = section.ddot(section);
 
-                k = section.ddot((*it_current).point - (*it_ref1).point) / section.ddot(section);
+                if(len_squared > 0)
+                        k = section.ddot((*it_current).point - (*it_ref1).point) / len_squared;
+                else
+                        k = -2.0;
 
                 std::cout << "k: " << k << std::endl;
 
-                if(k < 0.0)
+                if(k < 0)
                 {
                         dist =  (*it_ref2).point - (*it_current).point;
-                        distances << sqrt(dist.ddot(dist));
+                        distan << sqrt(dist.ddot(dist));
+                        std::cout << distan.last() << std::endl;
                 }
 
-                else if( k > 1.0)
+                else if( k > 1)
                 {
                         dist =  (*it_ref1).point - (*it_current).point;
-                        distances << sqrt(dist.ddot(dist));
+                        distan << sqrt(dist.ddot(dist));
+                        std::cout << distan.last() << std::endl;
                 }
                 else
                 {
-                        dist = ((*it_ref2).point * k) - (*it_current).point;
-                        distances << sqrt(dist.ddot(dist));
+                        dist = ((*it_ref1).point + (section*k)) - (*it_current).point;
+                        distan << sqrt(dist.ddot(dist));
+                        std::cout << distan.last() << std::endl;
                 }
         }
 
+        qSort(distan);
+
+        distances = distan;
+
         /*
-        std::cout << "Distances from topic: " << topic_name.toLocal8Bit().constData()
-                  << "to reference path" << std::endl;
+        std::cout << "print list size: " << distan.size() << std::endl;
 
-        for(int i = 0; i < distances.size(); ++i)
-                std::cout << distances.at(i) << std::endl;
-                */
+        Q_FOREACH(const double &d, distances)
+        {
+                std::cout << d << std::endl;
+        }
+        */
 
-        qSort(distances);
-
-        return distances.at(distances.size()/2);
+        return distan.at(distan.size()/2);
 }
 
 double TopicPathManager::getMedian() const
