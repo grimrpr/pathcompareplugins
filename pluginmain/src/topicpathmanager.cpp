@@ -113,12 +113,6 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
                         ++it_ref2;
                 }
                 section = (*it_ref1).point - (*it_ref2).point;
-                std::cout << "x p1: " << (*it_ref1).point.x << std::endl;
-                std::cout << "x p2: " << (*it_ref2).point.x << std::endl;
-                std::cout << "x curr: " << (*it_current).point.x << std::endl;
-                std::cout << "y p1: " << (*it_ref1).point.y << std::endl;
-                std::cout << "y p2: " << (*it_ref2).point.y << std::endl;
-                std::cout << "y curr: " << (*it_current).point.y << std::endl;
 
                 k = section.ddot((*it_current).point - (*it_ref1).point) / section.ddot(section);
 
@@ -126,43 +120,43 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
 
                 if(k < 0.0)
                 {
-//                        distances << ((*it_ref2).point.distanceToLine((*it_current).point, cv::Point3d()));
                         dist =  (*it_ref2).point - (*it_current).point;
                         distances << sqrt(dist.ddot(dist));
-                        std::cout << "x dist: " << dist.x << std::endl;
-                        std::cout << "y dist: " << dist.y << std::endl;
-                        std::cout << "k < 0" << std::endl;
                 }
 
                 else if( k > 1.0)
                 {
-//                        distances << ((*it_ref1).point.distanceToLine((*it_current).point, cv::Point3d()));
                         dist =  (*it_ref1).point - (*it_current).point;
                         distances << sqrt(dist.ddot(dist));
-                        std::cout << "k > 0" << std::endl;
                 }
                 else
                 {
-//                        distances << (*it_current).point.distanceToLine((*it_ref2).point, section);
                         dist = ((*it_ref2).point * k) - (*it_current).point;
                         distances << sqrt(dist.ddot(dist));
-                        std::cout << "between points" << std::endl;
                 }
         }
 
+        /*
         std::cout << "Distances from topic: " << topic_name.toLocal8Bit().constData()
                   << "to reference path" << std::endl;
 
         for(int i = 0; i < distances.size(); ++i)
                 std::cout << distances.at(i) << std::endl;
+                */
 
         qSort(distances);
+
         return distances.at(distances.size()/2);
 }
 
 double TopicPathManager::getMedian() const
 {
         return median;
+}
+
+QList<double> TopicPathManager::getDistances() const
+{
+        return distances;
 }
 
 int TopicPathManager::updateNumPoints()

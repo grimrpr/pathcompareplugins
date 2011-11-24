@@ -43,11 +43,15 @@ public:
         double updatePathLen();
         double getPathLength() const;
 
+        //updated Median and distances list
         double updateMedian(TopicPathPtr ref_path);
         double getMedian() const;
 
+        QList<double> getDistances() const;
+
         int updateNumPoints();
         int getNumPoints() const;
+
 
 private:
         void initData();
