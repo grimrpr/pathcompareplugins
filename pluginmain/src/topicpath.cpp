@@ -11,9 +11,9 @@ TopicPath::TopicPath(const nav_msgs::PathConstPtr &path)
 
 //CAREFUL
 //we assume that we got all points ordered in the path message
-QList<QVector3D> TopicPath::getAllPointsOrdered() const
+QList<cv::Point3d > TopicPath::getAllPointsOrdered() const
 {
-        QList<QVector3D> result;
+        QList<cv::Point3d > result;
 
         //CAREFUL
         //we assume that we got all points ordered in the path message
@@ -39,7 +39,7 @@ void TopicPath::setDataFromNavPath(const nav_msgs::PathConstPtr &nav_path)
         {
                 const geometry_msgs::PoseStamped *pose_stmpd = &(nav_path->poses[i]);
 
-                QVector3D point(pose_stmpd->pose.position.x,
+                cv::Point3d point(pose_stmpd->pose.position.x,
                           pose_stmpd->pose.position.y,
                           pose_stmpd->pose.position.z);
 

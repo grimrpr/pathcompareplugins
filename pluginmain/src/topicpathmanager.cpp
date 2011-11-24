@@ -70,13 +70,16 @@ QString TopicPathManager::getTopicName() const
 double TopicPathManager::updatePathLen()
 {
         double len = 0;
-        QList<QVector3D> points = current_path->getAllPointsOrdered();
+        QList<cv::Point3d > points = current_path->getAllPointsOrdered();
 
         if(points.size() >= 2)
         {
-                QList<QVector3D>::const_iterator it;
+                QList<cv::Point3d >::const_iterator it;
                 for(it = points.constBegin(); it < (points.constEnd()-1); ++it)
-                        len += (*it-*(it+1)).length();
+                {
+                        cv::Point3d p(*it-*(it+1));
+                        len += sqrt(p.ddot(p));
+                }
         }
 
         return len;
@@ -99,7 +102,7 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
         it_ref1 = ref_path->points.constBegin();
         it_ref2 = it_ref1 + 1;
 
-        QVector3D section;
+        cv::Point3d section, dist;
 
         for(it_current = current_path->points.constBegin(); it_current < current_path->points.constEnd(); ++it_current)
         {
@@ -110,15 +113,41 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
                         ++it_ref2;
                 }
                 section = (*it_ref1).point - (*it_ref2).point;
+                std::cout << "x p1: " << (*it_ref1).point.x << std::endl;
+                std::cout << "x p2: " << (*it_ref2).point.x << std::endl;
+                std::cout << "x curr: " << (*it_current).point.x << std::endl;
+                std::cout << "y p1: " << (*it_ref1).point.y << std::endl;
+                std::cout << "y p2: " << (*it_ref2).point.y << std::endl;
+                std::cout << "y curr: " << (*it_current).point.y << std::endl;
 
-                k = QVector3D::dotProduct(section, (*it_current).point) / section.lengthSquared();
+                k = section.ddot((*it_current).point - (*it_ref1).point) / section.ddot(section);
+
+                std::cout << "k: " << k << std::endl;
 
                 if(k < 0.0)
-                        distances << ((*it_ref2).point.distanceToLine((*it_current).point, QVector3D()));
+                {
+//                        distances << ((*it_ref2).point.distanceToLine((*it_current).point, cv::Point3d()));
+                        dist =  (*it_ref2).point - (*it_current).point;
+                        distances << sqrt(dist.ddot(dist));
+                        std::cout << "x dist: " << dist.x << std::endl;
+                        std::cout << "y dist: " << dist.y << std::endl;
+                        std::cout << "k < 0" << std::endl;
+                }
+
                 else if( k > 1.0)
-                        distances << ((*it_ref1).point.distanceToLine((*it_current).point, QVector3D()));
+                {
+//                        distances << ((*it_ref1).point.distanceToLine((*it_current).point, cv::Point3d()));
+                        dist =  (*it_ref1).point - (*it_current).point;
+                        distances << sqrt(dist.ddot(dist));
+                        std::cout << "k > 0" << std::endl;
+                }
                 else
-                        distances << (*it_current).point.distanceToLine((*it_ref2).point, section);
+                {
+//                        distances << (*it_current).point.distanceToLine((*it_ref2).point, section);
+                        dist = ((*it_ref2).point * k) - (*it_current).point;
+                        distances << sqrt(dist.ddot(dist));
+                        std::cout << "between points" << std::endl;
+                }
         }
 
         std::cout << "Distances from topic: " << topic_name.toLocal8Bit().constData()

@@ -7,9 +7,13 @@
 #include <geometry_msgs/Point.h>
 #include <ros/time.h>
 
+//openCV
+#include <cv.hpp>
+
 //Qt includes
-#include <QVector3D>
+#include <QObject>
 #include <QList>
+#include <QString>
 
 
 class Position
@@ -17,10 +21,10 @@ class Position
 public:
         const QString frame_id;
         const uint sequence_nbr;
-        const QVector3D point;
+        const cv::Point3d point;
         const ros::Time timestamp;
 
-        explicit Position(const uint &sequence_nbr, const QVector3D &point, const ros::Time &timestamp) :
+        explicit Position(const uint &sequence_nbr, const cv::Point3d &point, const ros::Time &timestamp) :
                 sequence_nbr(sequence_nbr),
                 point(point),
                 timestamp(timestamp)
@@ -37,7 +41,7 @@ public:
 
 class TopicPath : public QObject
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public:
     QString frame_id;
@@ -50,7 +54,7 @@ public:
 
     void setDataFromNavPath(const nav_msgs::PathConstPtr &nav_path);
 
-    QList<QVector3D> getAllPointsOrdered() const;
+    QList<cv::Point3d > getAllPointsOrdered() const;
 
 };
 
