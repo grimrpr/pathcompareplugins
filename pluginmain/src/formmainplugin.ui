@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>527</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,57 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QComboBox" name="ReferencePathSelection"/>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Reference path selection:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QComboBox" name="ReferencePathSelection"/>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <widget class="QTableView" name="PathInformationTable"/>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Export current results:</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="exportButton">
+        <property name="text">
+         <string>Export as CSV</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Results:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTableView" name="PathInformationTable"/>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

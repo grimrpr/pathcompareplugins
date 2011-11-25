@@ -24,6 +24,9 @@ PathCompare::PathCompare(ROSManager *ros_mngr ,QWidget * tab_widget) :
 
         form->PathInformationTable->setModel(table_model.get());
 //        form->PathInformationTable->setModel(new GraphTableModel(tpm_list));
+
+        //connect export button with csv write slot
+        connect(form->exportButton, SIGNAL(clicked()), this, SLOT(writeCurrentData()));
 }
 
 void PathCompare::topicSelected(const QString topic_name)
@@ -81,4 +84,19 @@ void PathCompare::updateTopics()
                 }
                 Q_EMIT tpmListChanged(tpm_list);
         }
+}
+
+void PathCompare::writeCurrentData()
+{
+        std::ofstream out_file;
+        std::stringstream outss (stringstream::in | stringstream::out);
+        QList<TopicPathManagerPtr>::const_iterator it;
+
+        out_file.open("data.csv");
+
+        for(it = tpm_list.constBegin(); it != tpm_list.constEnd(); ++it)
+                (*it)->writeCSVstring(outss);
+
+        out_file << outss.str();
+        out_file.close();
 }

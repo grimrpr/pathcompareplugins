@@ -4,6 +4,10 @@
 //Qt includes
 #include <QObject>
 #include <QString>
+#include <QMap>
+
+//std includes
+#include <string>
 
 //ROS includes
 #include <nav_msgs/Path.h>
@@ -25,7 +29,11 @@ class TopicPathManager : public QObject
         double median;
         int num_points;
 
+        //ordered list of distances
         QList<double> distances;
+        //mapping between position and current distance to reference point
+        QMap<Position, double> pos_dist_map;
+
         TopicPathPtr current_ref_path;
 
 public:
@@ -49,6 +57,8 @@ public:
 
         QList<double> getDistances() const;
 
+        void writeCSVstring(std::stringstream &outstr) const;
+
         int updateNumPoints();
         int getNumPoints() const;
 
@@ -56,6 +66,10 @@ public:
 private:
         void initData();
         void updateData(const TopicPathPtr &topic_path);
+        void writeDataToStream(std::stringstream &stream,
+                               QMap<Position, double> pos_dist_map_,
+                               double pathlength_,
+                               double median_) const;
 
 Q_SIGNALS:
         void refreshTPM(const QString & topic);

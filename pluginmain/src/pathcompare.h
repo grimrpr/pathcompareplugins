@@ -7,6 +7,7 @@
 
 //std includes
 #include <iostream>
+#include <fstream>
 #include <string>
 
 //ROS includes
@@ -46,6 +47,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void updateTopics();
     void topicSelected(const QString topic_name);
+    void writeCurrentData();
 
 };
 

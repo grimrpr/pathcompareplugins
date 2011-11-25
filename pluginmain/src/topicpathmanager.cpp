@@ -2,7 +2,7 @@
 
 TopicPathManager::TopicPathManager(QString topic_name, QObject *parent) :
     QObject(parent),
-        topic_name(topic_name)
+    topic_name(topic_name)
 {
         initData();
 }
@@ -32,6 +32,8 @@ void TopicPathManager::initData()
 
 void TopicPathManager::updateData(const TopicPathPtr &topic_path)
 {
+        std::cout << "update topic: " << topic_name.toLocal8Bit().constData() << std::endl;
+
         pathlength = updatePathLen();
         /*
         std::cout << "The path of topic: "
@@ -112,13 +114,11 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
         it_ref2 = it_ref1 + 1;
 
 
-        std::cout << topic_name.toLocal8Bit().constData() << std::endl;
         for(it_current = current_path->points.constBegin(); it_current < current_path->points.constEnd(); ++it_current)
         {
                 //slide compare section in reference path
                 while(((*it_ref2) < (*it_current)) && (it_ref2 < (ref_path->points.constEnd() - 1)))
                 {
-                        std::cout << "slide compare section" << std::endl;
                         ++it_ref1;
                         ++it_ref2;
                 }
@@ -130,27 +130,25 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
                 else
                         k = -2.0;
 
-                std::cout << "k: " << k << std::endl;
-
                 if(k < 0)
                 {
                         dist =  (*it_ref2).point - (*it_current).point;
-                        distan << sqrt(dist.ddot(dist));
-                        std::cout << distan.last() << std::endl;
+//                        std::cout << distan.last() << std::endl;
                 }
 
                 else if( k > 1)
                 {
                         dist =  (*it_ref1).point - (*it_current).point;
-                        distan << sqrt(dist.ddot(dist));
-                        std::cout << distan.last() << std::endl;
+//                        std::cout << distan.last() << std::endl;
                 }
                 else
                 {
                         dist = ((*it_ref1).point + (section*k)) - (*it_current).point;
-                        distan << sqrt(dist.ddot(dist));
-                        std::cout << distan.last() << std::endl;
+//                        std::cout << distan.last() << std::endl;
                 }
+
+                distan << sqrt(dist.ddot(dist));
+                pos_dist_map[*it_current] = distan.last();
         }
 
         qSort(distan);
@@ -177,6 +175,37 @@ double TopicPathManager::getMedian() const
 QList<double> TopicPathManager::getDistances() const
 {
         return distances;
+}
+
+void TopicPathManager::writeCSVstring(std::stringstream &outstr) const
+{
+        //write table of lines: topicname;pathlength;mediandist;timestamp;pointx;pointy;pointz;distref
+        std::cout << "LENGTH OF pos_dist_map: " << pos_dist_map.size() << std::endl;
+
+        writeDataToStream(outstr, pos_dist_map, pathlength, median);
+
+}
+
+void TopicPathManager::writeDataToStream(std::stringstream &outstr,
+                                         QMap<Position, double> pos_dist_map_,
+                                         double pathlength_,
+                                         double median_) const
+{
+    //write table of lines: topicname;pathlength;mediandist;timestamp;pointx;pointy;pointz;distref
+    QMap<Position, double>::const_iterator it;
+    for(it = pos_dist_map_.constBegin(); it != pos_dist_map_.constEnd(); ++it)
+    {
+            ros::Time time = it.key().timestamp;
+
+            outstr << topic_name.toLocal8Bit().constData() << ";";
+            outstr << pathlength_ << ";";
+            outstr << median_<< ";";
+            outstr << time.toNSec() << ";";
+            outstr << it.key().point.x << ";";
+            outstr << it.key().point.y << ";";
+            outstr << it.key().point.z << ";";
+            outstr << it.value() << std::endl;
+    }
 }
 
 int TopicPathManager::updateNumPoints()

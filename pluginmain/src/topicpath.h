@@ -53,11 +53,12 @@ public:
     uint path_seq;
     ros::Time lastupdated;
     QList<Position> points;
+    nav_msgs::Path nav_path;
 
     TopicPath();
     TopicPath(const nav_msgs::PathConstPtr &path);
 
-    void setDataFromNavPath(const nav_msgs::PathConstPtr &nav_path);
+    void setDataFromNavPath(const nav_msgs::Path &nav_path);
 
     QList<cv::Point3d > getAllPointsOrdered() const;
 

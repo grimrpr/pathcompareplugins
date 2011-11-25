@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>camera view</string>
+      <string>Camera sources:</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>

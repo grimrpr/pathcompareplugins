@@ -4,9 +4,10 @@ TopicPath::TopicPath()
 {
 }
 
-TopicPath::TopicPath(const nav_msgs::PathConstPtr &path)
+TopicPath::TopicPath(const nav_msgs::PathConstPtr &path):
+        nav_path(*path)
 {
-        setDataFromNavPath(path);
+        setDataFromNavPath(nav_path);
 }
 
 //CAREFUL
@@ -28,16 +29,16 @@ QList<cv::Point3d > TopicPath::getAllPointsOrdered() const
 }
 
 ///initialize attributes
-void TopicPath::setDataFromNavPath(const nav_msgs::PathConstPtr &nav_path)
+void TopicPath::setDataFromNavPath(const nav_msgs::Path &nav_path)
 {
 
-        frame_id = QString(nav_path->header.frame_id.c_str());
-        path_seq = nav_path->header.seq;
-        lastupdated = nav_path->header.stamp;
+        frame_id = QString(nav_path.header.frame_id.c_str());
+        path_seq = nav_path.header.seq;
+        lastupdated = nav_path.header.stamp;
 
-        for(uint i = 0; i < nav_path->poses.size(); ++i)
+        for(uint i = 0; i < nav_path.poses.size(); ++i)
         {
-                const geometry_msgs::PoseStamped *pose_stmpd = &(nav_path->poses[i]);
+                const geometry_msgs::PoseStamped *pose_stmpd = &(nav_path.poses[i]);
 
                 cv::Point3d point(pose_stmpd->pose.position.x,
                           pose_stmpd->pose.position.y,
