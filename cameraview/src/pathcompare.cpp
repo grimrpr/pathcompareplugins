@@ -72,7 +72,7 @@ void PathCompare::topicSelected(const QString &topic_name)
         //unsubscribe from topic
         //subscribe and get cache
         topic_cache = ros_mngr->subscribeToTopic<sensor_msgs::Image>(topic_name.toLocal8Bit().constData(),
-                                                                     1,
+                                                                     5,
                                                                      static_cast<ComperatorPlugin*>(this));
 
         //register new callback

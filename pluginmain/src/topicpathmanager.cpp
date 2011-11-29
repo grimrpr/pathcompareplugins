@@ -4,30 +4,15 @@ TopicPathManager::TopicPathManager(QString topic_name, QObject *parent) :
     QObject(parent),
     topic_name(topic_name)
 {
-        initData();
 }
 
 void TopicPathManager::processNewPathMsg(const nav_msgs::PathConstPtr &path)
 {
+        lock_current_path.lockForWrite();
         current_path = TopicPathPtr(new TopicPath(path));
+        lock_current_path.unlock();
 
         updateData(current_path);
-}
-
-/*
-QString TopicPathManager::getDataAt(int row) const
-{
-        if(data.size() <= row)
-                return QString();
-        else
-                return data.at(row);
-}
-*/
-
-void TopicPathManager::initData()
-{
-//        for(int i = 0; i < num_data_fields; ++i)
-//                data << QString();
 }
 
 void TopicPathManager::updateData(const TopicPathPtr &topic_path)
@@ -35,22 +20,12 @@ void TopicPathManager::updateData(const TopicPathPtr &topic_path)
         std::cout << "update topic: " << topic_name.toLocal8Bit().constData() << std::endl;
 
         pathlength = updatePathLen();
-        /*
-        std::cout << "The path of topic: "
-                  << topic_name.toLocal8Bit().constData()
-                  << " is now: " << pathlength
-                  << " long. " << std::endl;
-                  */
 
         median = updateMedian(current_ref_path);
-        /*
-        std::cout << "The path of topic: "
-                  << topic_name.toLocal8Bit().constData()
-                  << " has now: " << median
-                  << " as median devergence to reference path. " << std::endl;
-                  */
 
         num_points = updateNumPoints();
+
+        s_2 = updateS2AndArithMean();
 
         Q_EMIT refreshTPM(topic_name);
 }
@@ -74,11 +49,59 @@ QString TopicPathManager::getTopicName() const
         return topic_name;
 }
 
+double TopicPathManager::updateS2AndArithMean()
+{
+        //calculate arithmetical mean
+        double arith_mean_ = 0;
+
+        lock_pos_dist_map.lockForRead();
+        const QMap<Position, double> pos_dist_map_ = pos_dist_map;
+        lock_pos_dist_map.unlock();
+
+        QMap<Position, double>::const_iterator it;
+
+        for(it = pos_dist_map_.constBegin(); it != pos_dist_map_.constEnd(); ++it)
+        {
+                arith_mean_ += it.value();
+        }
+
+        arith_mean = arith_mean_ / pos_dist_map_.size();
+
+        double s_2_ = 0;
+        double diff;
+        for(it = pos_dist_map_.constBegin(); it != pos_dist_map_.constEnd(); ++it)
+        {
+                diff = (it.value() - arith_mean);
+                s_2_ += diff*diff;
+        }
+
+        s_2_ /= (pos_dist_map_.size() - 1);
+
+        return s_2_;
+}
+
+double TopicPathManager::getS2() const
+{
+        return s_2;
+}
+
+double TopicPathManager::getS() const
+{
+        return sqrt(s_2);
+}
+
+double TopicPathManager::getArithMean() const
+{
+        return arith_mean;
+}
+
 //TODO testing
 double TopicPathManager::updatePathLen()
 {
         double len = 0;
+        lock_current_path.lockForRead();
         QList<cv::Point3d > points = current_path->getAllPointsOrdered();
+        lock_current_path.unlock();
 
         if(points.size() >= 2)
         {
@@ -114,6 +137,8 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
         it_ref2 = it_ref1 + 1;
 
 
+        lock_current_path.lockForRead();
+        lock_pos_dist_map.lockForWrite();
         for(it_current = current_path->points.constBegin(); it_current < current_path->points.constEnd(); ++it_current)
         {
                 //slide compare section in reference path
@@ -150,6 +175,8 @@ double TopicPathManager::updateMedian(TopicPathPtr ref_path)
                 distan << sqrt(dist.ddot(dist));
                 pos_dist_map[*it_current] = distan.last();
         }
+        lock_pos_dist_map.unlock();
+        lock_current_path.unlock();
 
         qSort(distan);
 
@@ -210,7 +237,10 @@ void TopicPathManager::writeDataToStream(std::stringstream &outstr,
 
 int TopicPathManager::updateNumPoints()
 {
-        return current_path->points.size();
+        lock_current_path.lockForRead();
+        int result = current_path->points.size();
+        lock_current_path.unlock();
+        return result;
 }
 
 int TopicPathManager::getNumPoints() const

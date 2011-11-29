@@ -35,13 +35,23 @@ QVariant GraphTableModel::data(const QModelIndex &index, int role) const{
                 //distance median
                 case 2:
                         return QString().setNum(tpm->getMedian());
+                //arithmetic mean
+                case 3:
+                        return QString().setNum(tpm->getArithMean());
+                //S'2
+                case 4:
+                        return QString().setNum(tpm->getS2());
+                //S
+                case 5:
+                        return QString().setNum(tpm->getS());
+
                 default:
                         QList<double> distances = tpm->getDistances();
                         int size = distances.size();
-                        if((index.row()-3) >= size)
+                        if((index.row()-num_data_entry) >= size)
                                 return QString("");
                         else
-                                return QString().setNum(distances.at((size-1)-index.row()+3));
+                                return QString().setNum(distances.at((size-1)-index.row()+num_data_entry));
                 }
         }
 

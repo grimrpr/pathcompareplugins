@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QMap>
+#include <QReadWriteLock>
 
 //std includes
 #include <string>
@@ -28,11 +29,14 @@ class TopicPathManager : public QObject
         double pathlength;
         double median;
         int num_points;
+        double s_2;
+        double arith_mean;
 
         //ordered list of distances
         QList<double> distances;
         //mapping between position and current distance to reference point
         QMap<Position, double> pos_dist_map;
+        QReadWriteLock lock_current_path, lock_pos_dist_map;
 
         TopicPathPtr current_ref_path;
 
@@ -45,15 +49,19 @@ public:
         TopicPathPtr getCurrentPath() const;
         void updateReferencePath(TopicPathPtr new_ref_tp);
 
-//      QString getDataAt(int row) const;
-
         //data functions
         double updatePathLen();
         double getPathLength() const;
 
-        //updated Median and distances list
+        //update Median and distances list
         double updateMedian(TopicPathPtr ref_path);
         double getMedian() const;
+
+        //updates arithmetic mean returens cov s'^2
+        double updateS2AndArithMean();
+        double getS2() const;
+        double getS() const;
+        double getArithMean() const;
 
         QList<double> getDistances() const;
 
@@ -64,7 +72,6 @@ public:
 
 
 private:
-        void initData();
         void updateData(const TopicPathPtr &topic_path);
         void writeDataToStream(std::stringstream &stream,
                                QMap<Position, double> pos_dist_map_,

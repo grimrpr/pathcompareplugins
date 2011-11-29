@@ -22,6 +22,10 @@ class GraphTableModel : public QAbstractTableModel
         QList<TopicPathManagerPtr> tpm_list;
         QList<QString> analysis_header_data;
 
+private:
+        int num_data_entry;
+
+
 public:
     /**
       constructor
@@ -29,7 +33,15 @@ public:
     GraphTableModel(const QList<TopicPathManagerPtr> &tpm_list, QObject *parent=0):
             QAbstractTableModel(parent)
     {
-            analysis_header_data << "#points" << "pathlength" << "dist to ref (median)";
+            analysis_header_data << "total number of points"
+                                 << "pathlength"
+                                 << "median distance to reference"
+                                 << "mean distance to reference"
+                                 << "s squared (variance)"
+                                 << "s";
+
+            num_data_entry = analysis_header_data.size();
+
             //add strings for greatest 20 distances
             for(int i = 1; i <= 20; ++i)
                     analysis_header_data << QString().setNum(i);
