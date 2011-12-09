@@ -54,6 +54,7 @@ public:
     ros::Time lastupdated;
     QList<Position> points;
     nav_msgs::Path nav_path;
+//    nav_msgs::PathConstPtr nav_path;
 
     TopicPath();
     TopicPath(const nav_msgs::PathConstPtr &path);

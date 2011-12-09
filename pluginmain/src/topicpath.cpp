@@ -16,8 +16,7 @@ QList<cv::Point3d > TopicPath::getAllPointsOrdered() const
 {
         QList<cv::Point3d > result;
 
-        //CAREFUL
-        //we assume that we got all points ordered in the path message
+        //we assume here that we got all points ordered in the path message
 
         QList<Position>::const_iterator it;
         for(it = points.constBegin(); it != points.constEnd(); ++it)
