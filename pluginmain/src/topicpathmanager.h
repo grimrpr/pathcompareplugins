@@ -76,7 +76,10 @@ private:
         void writeDataToStream(std::stringstream &stream,
                                QMap<Position, double> pos_dist_map_,
                                double pathlength_,
-                               double median_) const;
+                               double median_,
+                               double s_2_,
+                               double arith_mean_
+                               ) const;
 
 Q_SIGNALS:
         void refreshTPM(const QString & topic);

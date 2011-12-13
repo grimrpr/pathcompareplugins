@@ -209,14 +209,17 @@ void TopicPathManager::writeCSVstring(std::stringstream &outstr) const
         //write table of lines: topicname;pathlength;mediandist;timestamp;pointx;pointy;pointz;distref
         std::cout << "LENGTH OF pos_dist_map: " << pos_dist_map.size() << std::endl;
 
-        writeDataToStream(outstr, pos_dist_map, pathlength, median);
+        writeDataToStream(outstr, pos_dist_map, pathlength, median, s_2, arith_mean);
 
 }
 
 void TopicPathManager::writeDataToStream(std::stringstream &outstr,
                                          QMap<Position, double> pos_dist_map_,
                                          double pathlength_,
-                                         double median_) const
+                                         double median_,
+                                         double s_2_,
+                                         double arith_mean_
+                                         ) const
 {
     //write table of lines: topicname;pathlength;mediandist;timestamp;pointx;pointy;pointz;distref
     QMap<Position, double>::const_iterator it;
@@ -227,6 +230,9 @@ void TopicPathManager::writeDataToStream(std::stringstream &outstr,
             outstr << topic_name.toLocal8Bit().constData() << ";";
             outstr << pathlength_ << ";";
             outstr << median_<< ";";
+            outstr << s_2_ << ";";
+            outstr << sqrt(s_2_) << ";";
+            outstr << arith_mean_ << ";";
             outstr << time.toNSec() << ";";
             outstr << it.key().point.x << ";";
             outstr << it.key().point.y << ";";
